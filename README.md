@@ -1,4 +1,106 @@
-# Mask2Former: Masked-attention Mask Transformer for Universal Image Segmentation (CVPR 2022)
+# README
+
+Mask2Former: Masked-attention Mask Transformer for Universal Image Segmentation (CVPR 2022)
+
+[[`arXiv`](https://arxiv.org/abs/2112.01527)]
+
+## Code Structure
+
+- `configs`: config files
+- `datasets`: dataloaders
+- `demo`, `demo_video`: a command line tool to run a simple demo of builtin configs
+- `mask2former`, `mask2former_video`: core code for mask2former model
+- `tools`: contains few tools for MaskFormer
+
+## Runtime Environment
+
+### Requirements
+- Linux or macOS with Python ≥ 3.6
+- PyTorch ≥ 1.9 and [torchvision](https://github.com/pytorch/vision/) that matches the PyTorch installation.
+  Install them together at [pytorch.org](https://pytorch.org) to make sure of this. Note, please check
+  PyTorch version matches that is required by Detectron2.
+- Detectron2: follow [Detectron2 installation instructions](https://detectron2.readthedocs.io/tutorials/install.html).
+- OpenCV is optional but needed by demo and visualization
+- `pip install -r requirements.txt`
+
+### CUDA kernel for MSDeformAttn
+After preparing the required environment, run the following command to compile CUDA kernel for MSDeformAttn:
+
+`CUDA_HOME` must be defined and points to the directory of the installed CUDA toolkit.
+
+```bash
+cd mask2former/modeling/pixel_decoder/ops
+sh make.sh
+```
+
+#### Building on another system
+To build on a system that does not have a GPU device but provide the drivers:
+```bash
+TORCH_CUDA_ARCH_LIST='8.0' FORCE_CUDA=1 python setup.py build install
+```
+
+### Example conda environment setup
+```bash
+conda create --name mask2former python=3.8 -y
+conda activate mask2former
+conda install pytorch==1.9.0 torchvision==0.10.0 cudatoolkit=11.1 -c pytorch -c nvidia
+pip install -U opencv-python
+
+# under your working directory
+git clone git@github.com:facebookresearch/detectron2.git
+cd detectron2
+pip install -e .
+pip install git+https://github.com/cocodataset/panopticapi.git
+pip install git+https://github.com/mcordts/cityscapesScripts.git
+
+cd ..
+git clone git@github.com:facebookresearch/Mask2Former.git
+cd Mask2Former
+pip install -r requirements.txt
+cd mask2former/modeling/pixel_decoder/ops
+sh make.sh
+```
+
+## Running Method
+
+### Download the Checkpoints
+
+```
+mkdir models && cd models
+wget https://dl.fbaipublicfiles.com/maskformer/mask2former/ade20k/semantic/maskformer2_swin_large_IN21k_384_bs16_160k_res640/model_final_6b4a3a.pkl
+```
+
+> [Config file](configs/ade20k/semantic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_160k_res640.yaml)
+
+Inference demo with pre-trained models:
+
+```shell
+cd demo
+python demo.py \
+    --config-file ../configs/ade20k/semantic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_160k_res640.yaml \
+    --input input1.jpg input2.jpg \
+    --opts MODEL.WEIGHTS ../models/model_final_6b4a3a.pkl
+```
+
+To evaluate a model's performance, use
+
+```shell
+python train_net.py \
+  --config-file configs/ade20k/semantic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_160k_res640.yaml \
+  --eval-only MODEL.WEIGHTS models/model_final_6b4a3a.pkl
+```
+
+For more options, see `python train_net.py -h`.
+
+## Results
+
+```log
+[12/28 04:00:18 d2.engine.defaults]: Evaluation results for ade20k_sem_seg_val in csv format:
+[12/28 04:00:18 d2.evaluation.testing]: copypaste: Task: sem_seg
+[12/28 04:00:18 d2.evaluation.testing]: copypaste: mIoU,fwIoU,mACC,pACC
+[12/28 04:00:18 d2.evaluation.testing]: copypaste: 56.0270,75.8601,69.3965,85.2141
+```
+<!-- # Mask2Former: Masked-attention Mask Transformer for Universal Image Segmentation (CVPR 2022)
 
 [Bowen Cheng](https://bowenc0221.github.io/), [Ishan Misra](https://imisra.github.io/), [Alexander G. Schwing](https://alexander-schwing.de/), [Alexander Kirillov](https://alexander-kirillov.github.io/), [Rohit Girdhar](https://rohitgirdhar.github.io/)
 
@@ -75,4 +177,4 @@ If you find the code useful, please also consider the following BibTeX entry.
 
 ## Acknowledgement
 
-Code is largely based on MaskFormer (https://github.com/facebookresearch/MaskFormer).
+Code is largely based on MaskFormer (https://github.com/facebookresearch/MaskFormer). -->
