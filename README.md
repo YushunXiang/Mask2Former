@@ -78,8 +78,9 @@ Inference demo with pre-trained models:
 cd demo
 python demo.py \
     --config-file ../configs/ade20k/semantic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_160k_res640.yaml \
-    --input input1.jpg input2.jpg \
-    --opts MODEL.WEIGHTS ../models/model_final_6b4a3a.pkl
+    --input sample.jpg \
+    --opts MODEL.WEIGHTS ../models/model_final_6b4a3a.pkl \
+    --output results
 ```
 
 To evaluate a model's performance, use
